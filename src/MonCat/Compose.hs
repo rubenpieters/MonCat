@@ -6,11 +6,11 @@
 
 module MonCat.Compose where
 
-data (○) (f :: * -> *) (g :: * -> *) (x :: *)
+data Compose (f :: * -> *) (g :: * -> *) (x :: *)
   = Compose (f (g x))
 
-instance (Functor f, Functor g) => Functor (f ○ g) where
+instance (Functor f, Functor g) => Functor (f `Compose` g) where
   fmap :: forall a b.
-    (a -> b) -> (f ○ g) a -> (f ○ g) b
+    (a -> b) -> (f `Compose` g) a -> (f `Compose` g) b
   fmap f (Compose fga) =
     Compose ((\ga -> f <$> ga) <$> fga)

@@ -59,17 +59,23 @@ rep =
 -}
 
 instance Exp (->) (,) (->) Trivial where
-  curry :: ((x , a) -> b) -> (x -> a -> b)
+  curry ::
+    ((x , a) -> b) ->
+    (x -> a -> b)
   curry f x a = f (x, a)
-  uncurry :: (x -> (a -> b)) -> ((x , a) -> b)
+  uncurry ::
+    (x -> (a -> b)) ->
+    ((x , a) -> b)
   uncurry f (x, a) = f x a
 
 data ExpDay f g b = ExpDay { unExp :: forall a. f a -> g (b, a) }
 
-instance Exp ExpDay (⋆) (⇉) Functor where
+instance Exp ExpDay Day Nat Functor where
   curry ::
-    ((x ⋆ a) ⇉ b) -> (x ⇉ (a `ExpDay` b))
+    ((x `Day` a) `Nat` b) ->
+    (x `Nat` (a `ExpDay` b))
   curry (Nat m) = Nat (\x -> ExpDay (\y -> m (Day x y id)))
   uncurry :: (Functor b) =>
-    (x ⇉ (a `ExpDay` b)) -> ((x ⋆ a) ⇉ b)
+    (x `Nat` (a `ExpDay` b)) ->
+    ((x `Day` a) `Nat` b)
   uncurry (Nat f) = Nat (\(Day x y h) -> fmap h (unExp (f x) y))

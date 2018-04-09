@@ -37,20 +37,20 @@ instance MonInMonCat a (,) () (->) Monoid where
   μ = (\(a, b) -> a `mappend` b)
     :: Monoid a => (a , a) -> a
 
-instance MonInMonCat f (⋆) Id (⇉) Applicative where
+instance MonInMonCat f Day Id Nat Applicative where
   η _ = Nat (\(Id a) -> pure a)
-    :: Applicative f => Id ⇉ f
+    :: Applicative f => Id `Nat` f
   μ = Nat (\(Day a b f) -> liftA2 (curry f) a b)
-    :: Applicative f => (f ⋆ f) ⇉ f
+    :: Applicative f => (f `Day` f) `Nat` f
 
-instance MonInMonCat m (○) Id (⇉) Monad where
+instance MonInMonCat m Compose Id Nat Monad where
   η _ = Nat (\(Id a) -> return a)
-    :: Monad m => Id ⇉ m
+    :: Monad m => Id `Nat` m
   μ = Nat (\(Compose mm) -> join mm)
-    :: Monad m => (m ○ m) ⇉ m
+    :: Monad m => (m `Compose` m) `Nat` m
 
-instance MonInMonCat p (⊛) (->) (⇶) WeakArrow where
+instance MonInMonCat p PCom (->) BiNat WeakArrow where
   η _ = BiNat arr
-    :: WeakArrow p => (->) ⇶ p
+    :: WeakArrow p => (->) `BiNat` p
   μ = BiNat (\(PCom p q) -> p >>> q)
-    :: WeakArrow p => (p ⊛ p) ⇶ p
+    :: WeakArrow p => (p `PCom` p) `BiNat` p

@@ -55,44 +55,44 @@ instance MonCat (,) () (->) Trivial where
   ρ1 = (\a -> (a, ()))
     :: a -> (a , ())
 
-instance MonCat (⋆) Id (⇉) Functor where
+instance MonCat Day Id Nat Functor where
   α = Nat (\(Day a (Day b c f) g) -> Day (Day a b (\(x,y) -> (curry f y, x))) c (\((v, w), z) -> curry g w (v z)))
-    :: (a ⋆ (b ⋆ c)) ⇉ ((a ⋆ b) ⋆ c)
+    :: (a `Day` (b `Day` c)) `Nat` ((a `Day` b) `Day` c)
   α1 = Nat (\(Day (Day a b f) c g) -> Day a (Day b c (\(x, y) -> (flip (curry f) x, y))) (\(z, (v, w)) -> curry g (v z) w))
-    :: ((a ⋆ b) ⋆ c) ⇉ (a ⋆ (b ⋆ c))
+    :: ((a `Day` b) `Day` c) `Nat` (a `Day` (b `Day` c))
   λ = Nat (\(Day (Id x) a f) -> curry f x <$> a)
-    :: (Functor a) => (Id ⋆ a) ⇉ a
+    :: (Functor a) => (Id `Day` a) `Nat` a
   λ1 = Nat (\a -> Day (Id ()) a snd)
-    :: a ⇉ (Id ⋆ a)
+    :: a `Nat` (Id `Day` a)
   ρ = Nat (\(Day a (Id x) f) -> flip (curry f) x <$> a)
-    :: (Functor a) => (a ⋆ Id) ⇉ a
+    :: (Functor a) => (a `Day` Id) `Nat` a
   ρ1 = Nat (\a -> Day a (Id ()) fst)
-    :: a ⇉ (a ⋆ Id)
+    :: a `Nat` (a `Day` Id)
 
-instance MonCat (○) Id (⇉) Functor where
+instance MonCat Compose Id Nat Functor where
   α = Nat (\(Compose mm) -> Compose $ Compose $ (\(Compose m) -> m) <$> mm)
-    :: (Functor a) => (a ○ (b ○ c)) ⇉ ((a ○ b) ○ c)
+    :: (Functor a) => (a `Compose` (b `Compose` c)) `Nat` ((a `Compose` b) `Compose` c)
   α1 = Nat (\(Compose mm) -> Compose $ Compose <$> (\(Compose m) -> m) mm)
-    :: (Functor a) => ((a ○ b) ○ c) ⇉ (a ○ (b ○ c))
+    :: (Functor a) => ((a `Compose` b) `Compose` c) `Nat` (a `Compose` (b `Compose` c))
   λ = Nat (\(Compose ia) -> unId ia)
-    :: (Id ○ a) ⇉ a
+    :: (Id `Compose` a) `Nat` a
   λ1 = Nat (\a -> Compose (Id a))
-    :: a ⇉ (Id ○ a)
+    :: a `Nat` (Id `Compose` a)
   ρ = Nat (\(Compose ai) -> unId <$> ai)
-    :: (Functor a) => (a ○ Id) ⇉ a
+    :: (Functor a) => (a `Compose` Id) `Nat` a
   ρ1 = Nat (\a -> Compose (Id <$> a))
-    :: (Functor a) => a ⇉ (a ○ Id)
+    :: (Functor a) => a `Nat` (a `Compose` Id)
 
-instance MonCat (⊛) (->) (⇶) Profunctor where
+instance MonCat PCom (->) BiNat Profunctor where
   α = BiNat (\(PCom p (PCom q r)) -> PCom (PCom p q) r)
-    :: (a ⊛ (b ⊛ c)) ⇶ ((a ⊛ b) ⊛ c)
+    :: (a `PCom` (b `PCom` c)) `BiNat` ((a `PCom` b) `PCom` c)
   α1 = BiNat (\(PCom (PCom p q) r) -> PCom p (PCom q r))
-    :: ((a ⊛ b) ⊛ c) ⇶ (a ⊛ (b ⊛ c))
+    :: ((a `PCom` b) `PCom` c) `BiNat` (a `PCom` (b `PCom` c))
   λ = BiNat (\(PCom f a) -> dimap f id a)
-    :: (Profunctor a) => ((->) ⊛ a) ⇶ a
+    :: (Profunctor a) => ((->) `PCom` a) `BiNat` a
   λ1 = BiNat (\a -> PCom id a)
-    :: a ⇶ ((->) ⊛ a)
+    :: a `BiNat` ((->) `PCom` a)
   ρ = BiNat (\(PCom a f) -> dimap id f a)
-    :: (Profunctor a) => (a ⊛ (->)) ⇶ a
+    :: (Profunctor a) => (a `PCom` (->)) `BiNat` a
   ρ1 = BiNat (\a -> PCom a id)
-    :: a ⇶ (a ⊛ (->))
+    :: a `BiNat` (a `PCom` (->))

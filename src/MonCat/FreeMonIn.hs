@@ -53,18 +53,18 @@ instance FreeMonIn [] (,) () (->) Trivial where
   in2 (a, l) = a : l
   cata :: (() -> x) -> ((a , x) -> x) -> ([a] -> x)
   cata a _ []     = a ()
-  cata a b (x:xs) = b ((id ⊗ cata a b) (x, xs))
+  cata a b (x:xs) = b ((id `bimap` cata a b) (x, xs))
 
-instance FreeMonIn FreeAp (⋆) Id (⇉) Functor where
-  in1 :: Id ⇉ FreeAp f
+instance FreeMonIn FreeAp Day Id Nat Functor where
+  in1 :: Id `Nat` FreeAp f
   in1 = Nat (\(Id x) -> Pure x)
-  in2 :: f ⋆ FreeAp f ⇉ FreeAp f
+  in2 :: (f `Day` FreeAp f) `Nat` FreeAp f
   in2 = Nat Rec
-  cata :: (Functor f) => (Id ⇉ x) -> (f ⋆ x ⇉ x) -> (FreeAp f ⇉ x)
+  cata :: (Functor f) => (Id `Nat` x) -> (f `Day` x `Nat` x) -> (FreeAp f `Nat` x)
   cata a b = Nat f
     where
     f (Pure x)  = unNat a (Id x)
-    f (Rec day) = unNat b (unNat (id ⊗ cata a b) day)
+    f (Rec day) = unNat b (unNat (id `bimap` cata a b) day)
 
 hoist :: forall a b free op i arr obj.
   obj a =>
@@ -78,9 +78,9 @@ hoist x = cata f1 f2
   f1 = in1
   f2 :: (a `op` free b) `arr` free b
   f2 =
-    -- a ⊗ free b
-    (x ⊗ id) >>>
-    -- b ⊗ free b
+    -- a `op` free b
+    (x `bimap` id) >>>
+    -- b `op` free b
     in2
     -- free b
 
@@ -94,9 +94,9 @@ ins :: forall a arr op i free obj.
 ins =
   -- a
   ρ1 >>>
-  -- a ⊗ i
-  (id ⊗ in1) >>>
-  -- a ⊗ free a
+  -- a `op` i
+  (id `bimap` in1) >>>
+  -- a `op` free a
   in2
   -- free a
 
@@ -116,11 +116,11 @@ mu = uncurry (cata (curry f1) (curry f2))
   f1 = λ
   f2 :: ((a `op` (free a `exp` free a)) `op` free a) `arr` free a
   f2 =
-    -- (a ⊗ (free a `exp` free a)) ⊗ free a
+    -- (a `op` (free a `exp` free a)) `op` free a
     α1 >>>
-    -- a ⊗ ((free a `exp` free a) ⊗ free a)
-    (id ⊗ ev) >>>
-    -- a ⊗ free a
+    -- a `op` ((free a `exp` free a) `op` free a)
+    (id `bimap` ev) >>>
+    -- a `op` free a
     in2
     -- free a
 
@@ -137,8 +137,8 @@ free f =
   where
   f1 = η (Proxy :: Proxy monoid)
   f2 =
-    -- a ⊗ m
-    (f ⊗ id) >>>
-    -- m ⊗ m
+    -- a `op` m
+    (f `bimap` id) >>>
+    -- m `op` m
     μ
     -- m

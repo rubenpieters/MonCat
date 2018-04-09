@@ -6,9 +6,9 @@
 
 module MonCat.PCom where
 
-data (⊛) (p :: * -> * -> *) (q :: * -> * -> *) (x :: *) (y :: *)
+data PCom (p :: * -> * -> *) (q :: * -> * -> *) (x :: *) (y :: *)
   where
   PCom ::
     p x z ->
     q z y ->
-    (p ⊛ q) x y
+    (p `PCom` q) x y

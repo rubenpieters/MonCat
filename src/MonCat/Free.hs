@@ -5,7 +5,7 @@ module MonCat.Free where
 
 import MonCat.Compose
 
-data Free f x = Ret x | Con ((f ○ Free f) x)
+data Free f x = Ret x | Con ((f `Compose` Free f) x)
   deriving (Functor)
 
 instance (Functor f) => Applicative (Free f) where

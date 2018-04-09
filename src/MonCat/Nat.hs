@@ -8,11 +8,11 @@ import Prelude hiding (id, (.))
 
 import Control.Category
 
-newtype (⇉) f g = Nat
+newtype Nat f g = Nat
   { unNat :: forall a.
     f a -> g a
   }
 
-instance Category (⇉) where
+instance Category Nat where
   id = Nat id
   Nat f . Nat g = Nat (f . g)

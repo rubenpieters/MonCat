@@ -5,7 +5,7 @@ module MonCat.FreeAp where
 
 import MonCat.Day
 
-data FreeAp f x = Pure x | Rec ((f ⋆ FreeAp f) x)
+data FreeAp f x = Pure x | Rec ((f `Day` FreeAp f) x)
   deriving (Functor)
 
 instance Applicative (FreeAp f) where

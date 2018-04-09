@@ -53,8 +53,8 @@ in2 ::
   MonInMonCat (free a) op i arr monoid =>
   (a `op` free a) `arr` free a
 in2 =
-  -- a ⊗ free a
-  (ins ⊗ id) >>>
-  -- free a ⊗ free a
+  -- a `op` free a
+  (ins `bimap` id) >>>
+  -- free a `op` free a
   μ
   -- free a
