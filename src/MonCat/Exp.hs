@@ -6,6 +6,8 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE ConstraintKinds #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications#-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 
 module MonCat.Exp where
 
@@ -43,7 +45,6 @@ ev :: forall exp op arr obj a b.
   ((b `exp` a) `op` b) `arr` a
 ev = uncurry id
 
-{-
 rep :: forall (m :: k) (exp :: k -> k -> k)
     (op :: k -> k -> k) (i :: k) (arr :: k -> k -> *)
     (obj :: k -> Constraint) (monoid :: k -> Constraint).
@@ -53,10 +54,7 @@ rep :: forall (m :: k) (exp :: k -> k -> k)
   Exp exp op arr obj =>
   monoid m =>
   m `arr` (m `exp` m)
-rep =
-  (curry :: (m `op` m) `arr` m -> m `arr` (m `exp` m))
-  (μ :: (m `op` m) `arr` m)
--}
+rep = curry @_ @exp @op @arr @obj (μ @_ @m @op @i @arr @monoid)
 
 instance Exp (->) (,) (->) Trivial where
   curry ::
