@@ -6,6 +6,8 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE KindSignatures #-}
 
 module MonCat.FreeMonIn where
 
@@ -135,7 +137,7 @@ free :: forall op i arr obj a m free monoid.
 free f =
   cata f1 f2
   where
-  f1 = η (Proxy :: Proxy monoid)
+  f1 = η @_ @_ @_ @_ @_ @monoid
   f2 =
     -- a `op` m
     (f `bimap` id) >>>
